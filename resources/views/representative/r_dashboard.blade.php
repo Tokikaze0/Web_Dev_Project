@@ -22,7 +22,7 @@
         </form>
     </nav>
 
-    <!-- Main Content -->   
+    <!-- Main Content -->
     <div class="p-8">
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <h2 class="text-xl font-semibold mb-4">Event and RFID Attendance</h2>
@@ -52,7 +52,6 @@
 
     <script>
         document.getElementById('rfid').addEventListener('keydown', async function(e) {
-            // Check if RFID exists in the students table
             if (e.key === 'Enter') {
                 const rfid = e.target.value;
                 const eventId = document.getElementById('event').value;
@@ -60,7 +59,6 @@
                 // Check if an event is selected
                 if (!eventId) {
                     document.getElementById('message').innerText = 'Select an Event First';
-                    // Clear the RFID input after showing the message
                     document.getElementById('rfid').value = '';
                     return;
                 }
@@ -93,14 +91,12 @@
                         })
                     });
 
-                    alert('Attendance recorded successfully!');
-                    // Clear the RFID input and message
-                    document.getElementById('rfid').value = '';
-                    document.getElementById('message').innerText = ''; // Clear any previous message
+                    // Display success message with student's name
+                    document.getElementById('message').innerText = `Attendance recorded for ${data.student_name}.`;
+                    document.getElementById('rfid').value = ''; // Clear RFID input
                 } else {
                     document.getElementById('message').innerText = 'RFID does not exist';
-                    // Clear the RFID input after showing the message
-                    document.getElementById('rfid').value = '';
+                    document.getElementById('rfid').value = ''; // Clear RFID input
                 }
             }
         });

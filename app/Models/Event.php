@@ -14,12 +14,23 @@ class Event extends Model
 
     // Mass assignable attributes
     protected $fillable = [
-        'name', 'date', 'location' // Adjust the attributes based on your database
+        'name',
+        'date',
+        'location',
+        'start_time',
+        'end_time', // Add start_time and end_time to the fillable fields
+        'school_id',
     ];
 
     // Relationship with AttendanceLog
     public function attendanceLogs()
     {
         return $this->hasMany(AttendanceLog::class);
+    }
+
+    public function index()
+    {
+        $events = Event::all(); // Replace with actual logic
+        return view('admin.events.index', compact('events'));
     }
 }
