@@ -7,12 +7,12 @@
     <table class="w-full mt-4 border border-gray-200">
         <thead class="bg-gray-200">
             <tr>
-                <th class="p-2">Name</th>
-                <th class="p-2">Date</th>
-                <th class="p-2">Location</th>
-                <th class="p-2">Start Time</th>
-                <th class="p-2">End Time</th>
-                <th class="p-2">Actions</th>
+                <th class="p-2 text-left">Name</th>
+                <th class="p-2 text-left">Date</th>
+                <th class="p-2 text-left">Location</th>
+                <th class="p-2 text-left">Start Time</th>
+                <th class="p-2 text-left">End Time</th>
+                <th class="p-2 text-left">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -20,6 +20,9 @@
             <tr class="border-b border-gray-200">
                 <td class="p-2">{{ $event->name }}</td>
                 <td class="p-2">{{ $event->date }}</td>
+                <td class="p-2">{{ $event->location }}</td>
+                <td class="p-2">{{ $event->start_time }}</td>
+                <td class="p-2">{{ $event->end_time }}</td>
                 <td class="p-2 flex space-x-2">
                     <a href="{{ route('admin.events.edit', $event->id) }}" class="text-blue-500 hover:underline">Edit</a>
                     <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
@@ -32,5 +35,6 @@
             @endforeach
         </tbody>
     </table>
+
 </div>
 @endsection

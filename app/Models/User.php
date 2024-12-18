@@ -19,7 +19,7 @@ class User extends Authenticatable
      */
     protected $table = 'user';
 
-     protected $fillable = [
+    protected $fillable = [
         'name',
         'username',
         'email',
@@ -52,5 +52,9 @@ class User extends Authenticatable
         return $this->role === $role;
     }
 
-    
+    // In User model
+    public function school()
+    {
+        return $this->belongsTo(School::class);
+    }
 }

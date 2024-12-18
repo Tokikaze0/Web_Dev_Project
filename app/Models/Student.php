@@ -16,7 +16,8 @@ class Student extends Model
     protected $fillable = [
         'name',
         'email',
-        'rfid' // Adjust the attributes based on your database
+        'rfid',
+        'school_id' // Adjust the attributes based on your database
     ];
 
     // Relationship with AttendanceLog

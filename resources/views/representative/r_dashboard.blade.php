@@ -27,6 +27,7 @@
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <h2 class="text-xl font-semibold mb-4">Event and RFID Attendance</h2>
 
+
             <!-- Event Selection -->
             <div class="mb-6">
                 <label for="event" class="block text-lg font-medium mb-2">Select Event:</label>

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Event;
 use App\Models\Student;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\StudentsImport;
 
 
 class AdminController extends Controller
@@ -69,28 +71,42 @@ class AdminController extends Controller
         return view('admin.events.create');
     }
 
-    public function storeEvent(Request $request)
+    public function import(Request $request)
     {
-        // Validate the input data
+        // Validate the CSV file
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:2048', // Add your validation rules
+        ]);
+
+        // Handle CSV file import
+        $path = $request->file('csv_file')->getRealPath();
+
+        try {
+            // Use the Excel package to import CSV data
+            Excel::import(new StudentsImport, $path);
+
+            return redirect()->route('admin.students.index')->with('success', 'Students imported successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.students.index')->with('error', 'Failed to import students.');
+        }
+    }
+
+    public function store(Request $request)
+    {
         $request->validate([
             'name' => 'required|string|max:255',
-            'date' => 'required|date|after_or_equal:today',
-            'start_time' => 'required|date_format:H:i', // Ensure valid start time format
-            'end_time' => 'required|date_format:H:i', // Ensure valid end time format
-            'location' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:students,email',
+            'rfid' => 'required|string|unique:students,rfid',
+            'school_id' => 'required|exists:schools,id',
         ]);
 
-        // Store the event in the database with the school_id of the logged-in admin
-        Event::create([
+        Student::create([
             'name' => $request->name,
-            'date' => $request->date, // Assuming 'date' is stored in the table
-            'start_time' => $request->start_time, // Store start_time
-            'end_time' => $request->end_time, // Store end_time
-            'location' => $request->location, // Assuming 'location' is stored in the table
-            'school_id' => auth()->user()->school_id, // Associating the event with the admin's school
+            'email' => $request->email ?? $request->name . '@gmail.com',
+            'rfid' => $request->rfid,
+            'school_id' => $request->school_id,
         ]);
 
-        // Redirect with success message
-        return redirect()->route('admin.events.index')->with('success', 'Event created successfully!');
+        return redirect()->route('admin.students.index')->with('success', 'Student created successfully!');
     }
 }

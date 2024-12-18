@@ -17,7 +17,6 @@ class EventController extends Controller
     public function index()
     {
         $events = Event::where('school_id', auth()->user()->school_id)->get();
-
         return view('admin.events.index', compact('events'));
     }
 
@@ -53,26 +52,33 @@ class EventController extends Controller
         return redirect()->route('admin.events.index')->with('success', 'Event created successfully!');
     }
 
-    // Show the form for editing an existing event
+    // Show the form for editing an event
     public function edit($id)
     {
-        $event = Event::where('school_id', auth()->user()->school_id)->findOrFail($id);
+        // Fetch the event by ID
+        $event = Event::findOrFail($id);
 
+        // Return the edit view with the event data
         return view('admin.events.edit', compact('event'));
     }
 
-    // Update an existing event in the database
+    // Update the event in the database
     public function update(Request $request, $id)
     {
-        $event = Event::where('school_id', auth()->user()->school_id)->findOrFail($id);
-
+        // Validate the request data
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'date' => 'required|date',
+            'location' => 'required|string|max:255',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
 
+        // Find the event and update it
+        $event = Event::findOrFail($id);
         $event->update($validated);
 
+        // Redirect back to the events list with a success message
         return redirect()->route('admin.events.index')->with('success', 'Event updated successfully.');
     }
 
