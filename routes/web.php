@@ -5,6 +5,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RepresentativeController;
 use App\Http\Controllers\StudentController;
+use Illuminate\Http\Request;
+use App\Models\Student;
+use App\Models\AttendanceLog;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,4 +43,26 @@ Route::group(['middleware' => ['auth', 'role:representative']], function () {
 // Student Routes
 Route::group(['middleware' => ['auth', 'role:student']], function () {
     Route::get('/student/dashboard', [StudentController::class, 'index'])->name('student.dashboard');
+});
+
+Route::post('/check-rfid', function (Request $request) {
+    $student = Student::where('rfid', $request->rfid)->first();
+
+    if ($student) {
+        return response()->json([
+            'exists' => true,
+            'student_id' => $student->id
+        ]);
+    }
+
+    return response()->json(['exists' => false]);
+});
+
+Route::post('/save-attendance', function (Request $request) {
+    AttendanceLog::create([
+        'student_id' => $request->student_id,
+        'event_id' => $request->event_id,
+        'attended_at' => now(),
+    ]);
+    return response()->json(['status' => 'success']);
 });
