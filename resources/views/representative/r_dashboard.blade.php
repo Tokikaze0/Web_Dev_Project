@@ -13,7 +13,7 @@
     <!-- Navbar -->
     <nav class="bg-blue-500 p-4 flex justify-between items-center">
         <div class="flex items-center space-x-4">
-            <img src="logo.png" alt="Logo" class="w-8 h-8">
+            <img src="{{ asset('MinSULogo.png') }}" alt="Logo" class="w-8 h-8">
             <span class="text-white text-xl font-semibold">Dashboard</span>
         </div>
         <form action="{{ route('logout') }}" method="POST">
@@ -22,7 +22,7 @@
         </form>
     </nav>
 
-    <!-- Main Content -->
+    <!-- Main Content -->   
     <div class="p-8">
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <h2 class="text-xl font-semibold mb-4">Event and RFID Attendance</h2>
