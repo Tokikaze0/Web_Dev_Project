@@ -42,9 +42,9 @@ class StudentController extends Controller
         ]);
 
         // Debug: Check if validation passed
-        if ($validated) {
-            dd('Validation passed');
-        }
+        // if ($validated) {
+        //     dd('Validation passed');
+        // }
 
         // Get the currently logged-in user
         $user = auth()->user();
@@ -56,11 +56,11 @@ class StudentController extends Controller
         $student = Student::create($validated);
 
         // Check if the student is saved
-        if ($student) {
-            dd('Student saved:', $student);
-        } else {
-            dd('Student not saved');
-        }
+        // if ($student) {
+        //     dd('Student saved:', $student);
+        // } else {
+        //     dd('Student not saved');
+        // }
 
         return redirect()->route('admin.students.index')->with('success', 'Student added successfully.');
     }

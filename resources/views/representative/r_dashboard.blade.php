@@ -49,60 +49,125 @@
             <!-- Message -->
             <div id="message" class="text-red-500 text-lg"></div>
         </div>
+        <!-- Students Logged Into the Event -->
+        <div class="mt-6">
+            <h3 class="text-lg font-semibold mb-4">Students Logged Into the Event</h3>
+            <div id="student-log" class="border border-gray-200 p-4 rounded-lg bg-gray-50">
+                <p class="text-gray-500">Select an event to see the logged students.</p>
+            </div>
+        </div>
     </div>
-
     <script>
+        const eventDropdown = document.getElementById('event');
+        const studentLogContainer = document.getElementById('student-log');
+
+        // Fetch attendance logs for the selected event
+        async function fetchAttendanceLogs(eventId) {
+            try {
+                const response = await fetch('/get-attendance-logs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify({
+                        event_id: eventId
+                    }),
+                });
+
+                const logs = await response.json();
+
+                if (logs.length > 0) {
+                    studentLogContainer.innerHTML = logs.map(log => `
+                    <div class="p-2 border-b border-gray-200">
+                        <p class="font-medium">${log.student.name}</p>
+                        <p class="text-sm text-gray-500">Logged at: ${new Date(log.created_at).toLocaleString()}</p>
+                    </div>
+                `).join('');
+                } else {
+                    studentLogContainer.innerHTML = '<p class="text-gray-500">No students logged for this event.</p>';
+                }
+            } catch (error) {
+                studentLogContainer.innerHTML = '<p class="text-red-500">Failed to fetch attendance logs.</p>';
+                console.error(error);
+            }
+        }
+
+        // Update logs when an event is selected
+        eventDropdown.addEventListener('change', function() {
+            const eventId = this.value;
+            if (eventId) {
+                fetchAttendanceLogs(eventId);
+            }
+        });
+
+        // Update logs after recording attendance
+        async function updateAttendanceLogs(eventId) {
+            if (eventId) {
+                await fetchAttendanceLogs(eventId);
+            }
+        }
+
+        // Handle RFID submission
         document.getElementById('rfid').addEventListener('keydown', async function(e) {
             if (e.key === 'Enter') {
                 const rfid = e.target.value;
-                const eventId = document.getElementById('event').value;
+                const eventId = eventDropdown.value;
 
-                // Check if an event is selected
                 if (!eventId) {
                     document.getElementById('message').innerText = 'Select an Event First';
                     document.getElementById('rfid').value = '';
                     return;
                 }
 
-                // Send RFID to the server to check if it exists
-                const response = await fetch('/check-rfid', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        rfid: rfid
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.exists) {
-                    // Save the attendance record in 'attendancelogs'
-                    await fetch('/save-attendance', {
+                try {
+                    const response = await fetch('/check-rfid', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         },
                         body: JSON.stringify({
-                            student_id: data.student_id,
+                            rfid,
                             event_id: eventId
-                        })
+                        }),
                     });
 
-                    // Display success message with student's name
-                    document.getElementById('message').innerText = `Attendance recorded for ${data.student_name}.`;
-                    document.getElementById('rfid').value = ''; // Clear RFID input
-                } else {
-                    document.getElementById('message').innerText = 'RFID does not exist';
-                    document.getElementById('rfid').value = ''; // Clear RFID input
+                    const data = await response.json();
+
+                    if (data.exists) {
+                        const saveResponse = await fetch('/save-attendance', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            },
+                            body: JSON.stringify({
+                                student_id: data.student_id,
+                                event_id: eventId
+                            }),
+                        });
+
+                        const saveData = await saveResponse.json();
+
+                        if (saveData.status === 'success') {
+                            document.getElementById('message').innerText = `Attendance recorded for ${data.student_name}.`;
+                            updateAttendanceLogs(eventId); // Refresh logs
+                        } else {
+                            document.getElementById('message').innerText = saveData.message;
+                        }
+                    } else {
+                        document.getElementById('message').innerText = 'RFID does not exist';
+                    }
+                } catch (error) {
+                    document.getElementById('message').innerText = 'An error occurred. Please try again.';
+                    console.error(error);
+                } finally {
+                    document.getElementById('rfid').value = '';
                 }
             }
         });
     </script>
-
 </body>
 
 </html>

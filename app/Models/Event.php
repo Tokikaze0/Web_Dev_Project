@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 class Event extends Model
 {
     use HasFactory;
@@ -33,4 +32,8 @@ class Event extends Model
         $events = Event::all(); // Replace with actual logic
         return view('admin.events.index', compact('events'));
     }
+    // Event.php
+
+
+
 }

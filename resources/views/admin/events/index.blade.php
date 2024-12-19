@@ -39,13 +39,13 @@
     </table>
 
     <!-- Section for showing students who logged into the selected event -->
-    <div class="mt-6">
+    <!-- <div class="mt-6">
         <h3 class="text-lg font-semibold mb-4">Students Logged Into the Event</h3>
         <div id="student-log" class="border border-gray-200 p-4 rounded-lg bg-gray-50">
             <p class="text-gray-500">Select an event to see the logged students.</p>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Script to handle dynamic updates -->
 <script>
