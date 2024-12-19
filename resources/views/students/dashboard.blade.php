@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="bg-white p-6 rounded-lg shadow-lg">
-    <h2 class="text-xl font-semibold mb-4">Your Events</h2>
+    <h2 class="text-xl font-semibold mb-4">Student Events</h2>
 
     <div id="calendar"></div> <!-- FullCalendar container -->
 </div>

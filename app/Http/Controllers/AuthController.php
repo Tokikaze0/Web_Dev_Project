@@ -31,7 +31,7 @@ class AuthController extends Controller
             } elseif ($user->role === 'representative') {
                 return redirect()->route('representative.dashboard');
             } elseif ($user->role === 'student') {
-                return redirect()->route('student.dashboard');
+                return redirect()->route('students.dashboard');
             }
         }
 

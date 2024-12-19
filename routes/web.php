@@ -133,4 +133,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin/events')->group(functio
     Route::get('/{id}/edit', [EventController::class, 'edit'])->name('admin.events.edit');
     Route::put('/{id}', [EventController::class, 'update'])->name('admin.events.update');
     Route::delete('/{id}', [EventController::class, 'destroy'])->name('admin.events.destroy');
+    Route::get('/admin/events/{event}/students', [EventController::class, 'getEventStudents']);
+
 });

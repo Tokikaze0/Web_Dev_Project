@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Event;
+use App\Models\AttendanceLog;
+use Illuminate\Http\Request;
+use Carbon\Carbon; // Import Carbon class
 
 class EventController extends Controller
 {
@@ -90,5 +92,41 @@ class EventController extends Controller
         $event->delete();
 
         return redirect()->route('admin.events.index')->with('success', 'Event deleted successfully.');
+    }
+
+    // Fetch students who attended the event
+    public function getEventStudents($eventId)
+    {
+        // Fetch attendance logs for the given event
+        $students = AttendanceLog::where('event_id', $eventId)
+            ->join('students', 'attendance_logs.student_id', '=', 'students.id')
+            ->select('students.name', 'attendance_logs.attended_at')
+            ->get();
+
+        // Fetch the event details
+        $event = Event::find($eventId);
+
+        // Process attendance status for each student
+        $students = $students->map(function ($student) use ($event) {
+            $attendedAt = Carbon::parse($student->attended_at);
+            $status = 'absent'; // Default status is absent
+
+            if ($attendedAt->lte(Carbon::parse($event->end_time))) {
+                // If attendance is on or before the event's end time, mark as on-time
+                $status = 'on-time';
+            } elseif ($attendedAt->between(Carbon::parse($event->start_time), Carbon::parse($event->end_time))) {
+                // If attendance is within the event start and end time, mark as late
+                $status = 'late';
+            }
+
+            return [
+                'name' => $student->name,
+                'attended_at' => $student->attended_at,
+                'status' => $status,
+            ];
+        });
+
+        // Return the students with their status as JSON
+        return response()->json(['students' => $students]);
     }
 }

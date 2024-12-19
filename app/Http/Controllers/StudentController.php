@@ -32,7 +32,6 @@ class StudentController extends Controller
     }
 
     // Store a new student
-    // Store a new student
     public function store(Request $request)
     {
         // Validate the input data
@@ -42,6 +41,11 @@ class StudentController extends Controller
             'rfid' => 'required|string|unique:students',
         ]);
 
+        // Debug: Check if validation passed
+        if ($validated) {
+            dd('Validation passed');
+        }
+
         // Get the currently logged-in user
         $user = auth()->user();
 
@@ -49,10 +53,18 @@ class StudentController extends Controller
         $validated['school_id'] = $user->school_id;
 
         // Create the student record with the validated data, including school_id
-        Student::create($validated);
+        $student = Student::create($validated);
+
+        // Check if the student is saved
+        if ($student) {
+            dd('Student saved:', $student);
+        } else {
+            dd('Student not saved');
+        }
 
         return redirect()->route('admin.students.index')->with('success', 'Student added successfully.');
     }
+
 
     // Show the form for editing an existing student
     public function edit($id)
