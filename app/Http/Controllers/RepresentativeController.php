@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Event;
+use Carbon\Carbon;
 use App\Models\AttendanceLog;
 
 class RepresentativeController extends Controller
@@ -17,14 +18,28 @@ class RepresentativeController extends Controller
 
     // Additional representative-specific methods...
     public function getAttendanceLogs(Request $request)
-    {
-        $eventId = $request->event_id;
-        $attendanceLogs = AttendanceLog::where('event_id', $eventId)
-            ->with('student') // Assuming there's a relationship with the Student model
-            ->get();
+{
+    $request->validate([
+        'event_id' => 'required|exists:events,id',
+    ]);
 
-        return response()->json($attendanceLogs);
-    }
+    $eventId = $request->event_id;
+
+    $attendanceLogs = AttendanceLog::where('event_id', $eventId)
+        ->with(['student' => function ($query) {
+            $query->select('id', 'name'); // Select only necessary fields
+        }])
+        ->select('id', 'student_id', 'event_id', 'attended_at', 'status') // Ensure attended_at is selected
+        ->get();
+
+    // Format the attended_at date for each log
+    $attendanceLogs->each(function ($log) {
+        // Make sure attended_at is in a valid format
+        $log->attended_at = Carbon::parse($log->attended_at)->toDateTimeString(); // Converts to a proper datetime format
+    });
+
+    return response()->json($attendanceLogs);
+}
 
     public function saveAttendance(Request $request)
     {
@@ -41,4 +56,6 @@ class RepresentativeController extends Controller
 
         return response()->json(['status' => 'success', 'attendance' => $attendance]);
     }
+
+    
 }

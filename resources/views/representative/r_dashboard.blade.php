@@ -47,7 +47,7 @@
             </div>
 
             <!-- Message -->
-            <div id="message" class="text-red-500 text-lg"></div>
+            <div id="message" class="text-green-500 text-lg"></div>
         </div>
         <!-- Students Logged Into the Event -->
         <div class="mt-6">
@@ -81,7 +81,7 @@
                     studentLogContainer.innerHTML = logs.map(log => `
                     <div class="p-2 border-b border-gray-200">
                         <p class="font-medium">${log.student.name}</p>
-                        <p class="text-sm text-gray-500">Logged at: ${new Date(log.created_at).toLocaleString()}</p>
+                        <p class="text-sm text-gray-500">Logged at: ${new Date(log.attended_at).toLocaleString()}</p>
                     </div>
                 `).join('');
                 } else {

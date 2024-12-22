@@ -115,10 +115,10 @@
 </head>
 <body>
     <div class="container">
-        <h1><b>Admin Login</b></h1>
+        <h1><b>Log In</b></h1>
         <hr>
         
-        <p>Sign in to start your session</p>
+        <p>Sign in to start checking attendance</p>
         <form method="POST" action="{{ route('login') }}">
             @csrf
             <div class="form-group">

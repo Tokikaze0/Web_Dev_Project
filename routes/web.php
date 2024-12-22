@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RepresentativeController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentShowController;
 use App\Http\Controllers\EventController;
 use Illuminate\Http\Request;
 use App\Models\Student;
@@ -31,13 +32,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Admin Routes
 Route::group(['middleware' => ['auth', 'role:admin']], function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::resource('/admin/students', StudentController::class)->except(['show']);
+    Route::resource('/admin/students1', StudentController::class)->except(['show']);
     Route::post('/admin/students/{student}/toggle-role', [StudentController::class, 'toggleRole'])->name('admin.students.toggleRole');
     Route::resource('/admin/events', EventController::class)->except(['show']);
     Route::get('/admin/profile', [AdminController::class, 'editProfile'])->name('admin.profile');
     Route::post('/admin/profile', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
     Route::post('/students/import', [AdminController::class, 'import'])->name('admin.students.import');
-    Route::get('/', [StudentController::class, 'adminIndex'])->name('admin.students.index');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin/students')->group(function () {
@@ -59,7 +59,8 @@ Route::group(['middleware' => ['auth', 'role:representative']], function () {
 
 // Student Routes
 Route::group(['middleware' => ['auth', 'role:student']], function () {
-Route::get('/student/dashboard', [StudentController::class, 'index'])->name('students.dashboard');
+    Route::get('/student/dashboard', [StudentShowController::class, 'index'])->name('students.student_dashboard');
+    Route::get('/student/events', [StudentShowController::class, 'studentEvents'])->name('students.events');
 });
 
 // RFID Check and Attendance
